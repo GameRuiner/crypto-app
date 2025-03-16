@@ -1,5 +1,6 @@
 import path from "path";
 import webpack from "webpack";
+import webpackDevServer from 'webpack-dev-server';
 import HtmlWebpackPlugin from "html-webpack-plugin";
 import ForkTsCheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";
 import ESLintPlugin from "eslint-webpack-plugin";
@@ -29,6 +30,11 @@ const webpackConfig = (env): webpack.Configuration => ({
             }
         ]
     },
+    devServer: {  
+        historyApiFallback: true,
+        hot: true,
+        port: 8080,
+      },
     plugins: [
         new HtmlWebpackPlugin({
             template: "./public/index.html"

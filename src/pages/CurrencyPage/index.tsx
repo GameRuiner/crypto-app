@@ -1,8 +1,11 @@
 import {Rate} from "components/Rate";
 import React, {useEffect, useState} from "react";
+import {useParams, Link} from "react-router-dom";
 
-const HomePage: React.FC = () => {
-    const [rates, setRates] = useState<{[key: string]: Rate}>({});
+const CurrencyPage: React.FC = () => {
+    const {currency} = useParams<{currency: string}>();
+    console.log(currency);
+    const [rateData, setRateData] = useState<Rate | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -14,13 +17,12 @@ const HomePage: React.FC = () => {
                     throw new Error("Failed to fetch rates");
                 }
                 const data = await response.json();
-                const extractedRates: {[key: string]: Rate} = {};
-                for (const currency in data) {
-                    if (data[currency].usd) {
-                        extractedRates[currency] = data[currency].usd;
-                    }
+
+                if (data[currency!] && data[currency!].usd) {
+                    setRateData(data[currency!].usd);
+                } else {
+                    setError("Currency not found");
                 }
-                setRates(extractedRates);
             } catch (e) {
                 setError((e as Error).message);
             } finally {
@@ -29,27 +31,24 @@ const HomePage: React.FC = () => {
         };
 
         fetchRates();
-    }, []);
+    }, [currency]);
 
     return (
         <>
-            <h1>Cryptocurrency rates </h1>
-            <h2>Relative to USD</h2>
+            <h1>{currency?.toUpperCase()} Details</h1>
+            <Link to="/">Back to Home</Link>
             {loading && <p>Loading...</p>}
             {error && <p style={{color: "red"}}>{error}</p>}
-            {!loading && !error && (
+            {rateData && (
                 <ul>
-                    {Object.entries(rates).map(([currency, rateData]) => (
-                        <li key={currency}>
-                            <a href={`/${currency}`}>
-                                <strong>{currency.toUpperCase()}:</strong> {rateData.rate}
-                            </a>
-                        </li>
-                    ))}
+                    <li>Rate: {rateData.rate}</li>
+                    <li>Ask: {rateData.ask}</li>
+                    <li>Bid: {rateData.bid}</li>
+                    <li>24h Change: {rateData.diff24h}</li>
                 </ul>
             )}
         </>
     );
 };
 
-export default HomePage;
+export default CurrencyPage;

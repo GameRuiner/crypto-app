@@ -32,23 +32,24 @@ const HomePage: React.FC = () => {
     }, []);
 
     return (
-        <>
-            <h1>Cryptocurrency rates </h1>
-            <h2>Relative to USD</h2>
+        <main className="container">
+            <h1 className="mt-10">Cryptocurrency rates </h1>
+            <p className="mt-20">Relative to USD</p>
             {loading && <p>Loading...</p>}
             {error && <p style={{color: "red"}}>{error}</p>}
             {!loading && !error && (
-                <ul>
+                <ul className="rates-list">
                     {Object.entries(rates).map(([currency, rateData]) => (
                         <li key={currency}>
-                            <a href={`/${currency}`}>
-                                <strong>{currency.toUpperCase()}:</strong> {rateData.rate}
+                            <a href={`/${currency}`} className="currency-item">
+                                <strong>{currency.toUpperCase()}</strong>
+                                <p>{rateData.rate}</p>
                             </a>
                         </li>
                     ))}
                 </ul>
             )}
-        </>
+        </main>
     );
 };
 

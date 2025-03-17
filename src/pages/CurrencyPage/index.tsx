@@ -4,8 +4,7 @@ import {useParams, Link} from "react-router-dom";
 
 const CurrencyPage: React.FC = () => {
     const {currency} = useParams<{currency: string}>();
-    console.log(currency);
-    const [rateData, setRateData] = useState<Rate | null>(null);
+    const [rateDataDict, setRateDataDict] = useState<{string: Rate} | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -17,9 +16,8 @@ const CurrencyPage: React.FC = () => {
                     throw new Error("Failed to fetch rates");
                 }
                 const data = await response.json();
-
-                if (data[currency!] && data[currency!].usd) {
-                    setRateData(data[currency!].usd);
+                if (data[currency]) {
+                    setRateDataDict(data[currency]);
                 } else {
                     setError("Currency not found");
                 }
@@ -34,20 +32,25 @@ const CurrencyPage: React.FC = () => {
     }, [currency]);
 
     return (
-        <>
+        <main className="container">
             <h1>{currency?.toUpperCase()} Details</h1>
             <Link to="/">Back to Home</Link>
             {loading && <p>Loading...</p>}
             {error && <p style={{color: "red"}}>{error}</p>}
-            {rateData && (
+            {rateDataDict && (
                 <ul>
-                    <li>Rate: {rateData.rate}</li>
-                    <li>Ask: {rateData.ask}</li>
-                    <li>Bid: {rateData.bid}</li>
-                    <li>24h Change: {rateData.diff24h}</li>
+                    {Object.entries(rateDataDict).map(([rateCurrency, rateData]) => (
+                        <li key={rateCurrency}>
+                            <strong>{rateCurrency.toUpperCase()}</strong>
+                            <p>Rate: {rateData.rate}</p>
+                            <p>Ask: {rateData.ask}</p>
+                            <p>Bid: {rateData.bid}</p>
+                            <p>24h Change: {rateData.diff24h}</p>
+                        </li>
+                    ))}
                 </ul>
             )}
-        </>
+        </main>
     );
 };
 

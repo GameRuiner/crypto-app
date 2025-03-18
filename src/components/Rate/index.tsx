@@ -4,3 +4,7 @@ export interface Rate {
     bid: number;
     diff24h: number;
 }
+
+export interface RateArrayItem extends Rate {
+    currency: string;
+}

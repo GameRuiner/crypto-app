@@ -2,6 +2,8 @@ import {Rate, RateArrayItem} from "components/Rate";
 import React, {useEffect, useState} from "react";
 import {useParams, Link} from "react-router-dom";
 
+const SORT_ORDER = ["none", "desc", "asc"];
+
 const CurrencyPage: React.FC = () => {
     const {currency: currencyParameter} = useParams<{currency: string}>();
     const [rateDataArray, setRateDataArray] = useState<RateArrayItem[]>([]);
@@ -10,6 +12,7 @@ const CurrencyPage: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [sortBy, setSortBy] = useState<string | null>(null);
+    const [sortOrderIndex, setSortOrderIndex] = useState(0);
     const [filterValue, setFilterValue] = useState<string>("");
     const [groupBy, setGroupBy] = useState<boolean>(false);
 
@@ -44,14 +47,16 @@ const CurrencyPage: React.FC = () => {
 
     useEffect(() => {
         setProcessedRate(
-            rateDataArray
+            [...rateDataArray]
                 .filter((item) => item.currency.includes(filterValue.toUpperCase()))
                 .sort((a, b) => {
-                    if (!sortBy) return 0;
-                    return a[sortBy] > b[sortBy] ? 1 : -1;
+                    if (!sortBy || sortOrderIndex == 0) return 0;
+                    if (a[sortBy] > b[sortBy]) return SORT_ORDER[sortOrderIndex] === "asc" ? 1 : -1;
+                    if (a[sortBy] < b[sortBy]) return SORT_ORDER[sortOrderIndex] === "asc" ? -1 : 1;
+                    return 0;
                 })
         );
-    }, [rateDataArray, filterValue, sortBy]);
+    }, [rateDataArray, filterValue, sortBy, sortOrderIndex]);
 
     useEffect(() => {
         setGroupedRates(
@@ -69,6 +74,27 @@ const CurrencyPage: React.FC = () => {
         );
     }, [groupBy, processedRates]);
 
+    const handleSort = (column: string) => {
+        if (sortBy === column) {
+            setSortOrderIndex((sortOrderIndex + 1) % 3);
+        } else {
+            setSortBy(column);
+            setSortOrderIndex(1);
+        }
+    };
+
+    const getSortIcon = (column) => {
+        if (sortBy === column) {
+            const mapper = {
+                asc: "▲",
+                desc: "▼",
+                none: ""
+            };
+            return mapper[SORT_ORDER[sortOrderIndex]];
+        }
+        return "";
+    };
+
     return (
         <main className="container">
             <h1>{currencyParameter?.toUpperCase()} Details</h1>
@@ -76,14 +102,6 @@ const CurrencyPage: React.FC = () => {
             {loading && <p>Loading...</p>}
             {error && <p style={{color: "red"}}>{error}</p>}
             <div>
-                <label>Sort by:</label>
-                <select onChange={(e) => setSortBy(e.target.value)}>
-                    <option value="">None</option>
-                    <option value="rate">Rate</option>
-                    <option value="ask">Ask</option>
-                    <option value="bid">Bid</option>
-                    <option value="diff24h">24h Change</option>
-                </select>
                 <input
                     type="text"
                     placeholder="Filter by currency..."
@@ -99,13 +117,17 @@ const CurrencyPage: React.FC = () => {
                     Group by first letter
                 </label>
                 <table>
-                    <thead>
+                    <thead className="table-head">
                         <tr>
-                            <th>Name</th>
-                            <th>Rate</th>
-                            <th>Ask</th>
-                            <th>Bid</th>
-                            <th>24h %</th>
+                            <th onClick={() => handleSort("currency")}>
+                                {getSortIcon("currency")} Name
+                            </th>
+                            <th onClick={() => handleSort("rate")}>{getSortIcon("rate")} Rate</th>
+                            <th onClick={() => handleSort("ask")}>{getSortIcon("ask")} Ask</th>
+                            <th onClick={() => handleSort("bid")}>{getSortIcon("bid")} Bid</th>
+                            <th onClick={() => handleSort("diff24h")}>
+                                {getSortIcon("diff24h")} 24h %
+                            </th>
                         </tr>
                     </thead>
                     <tbody>

@@ -98,3 +98,8 @@ ul {
 .currency-data .group-name {
   text-align: center;
 }
+
+.control-container {
+  display: flex;
+  justify-content: space-between;
+}

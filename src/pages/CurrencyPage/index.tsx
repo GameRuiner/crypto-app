@@ -1,4 +1,5 @@
 import {Rate, RateArrayItem} from "components/Rate";
+import Toggle from "components/Toggle";
 import React, {useEffect, useState} from "react";
 import {useParams, Link} from "react-router-dom";
 
@@ -98,24 +99,21 @@ const CurrencyPage: React.FC = () => {
     return (
         <main className="container">
             <h1>{currencyParameter?.toUpperCase()} Details</h1>
-            <Link to="/">Back to Home</Link>
+            <Link to="/" className="mt-10">
+                Back to Home
+            </Link>
             {loading && <p>Loading...</p>}
             {error && <p style={{color: "red"}}>{error}</p>}
-            <div>
-                <input
-                    type="text"
-                    placeholder="Filter by currency..."
-                    value={filterValue}
-                    onChange={(e) => setFilterValue(e.target.value)}
-                />
-                <label>
+            <div className="mt-10">
+                <div className="control-container">
                     <input
-                        type="checkbox"
-                        checked={groupBy}
-                        onChange={() => setGroupBy(!groupBy)}
+                        type="text"
+                        placeholder="Filter by currency..."
+                        value={filterValue}
+                        onChange={(e) => setFilterValue(e.target.value)}
                     />
-                    Group by first letter
-                </label>
+                    <Toggle toggleHandler={setGroupBy} value={groupBy}></Toggle>
+                </div>
                 <table className="currency-data mt-20">
                     <thead className="table-head">
                         <tr>

@@ -78,3 +78,23 @@ ul {
 .table-head th {
   cursor: pointer;
 }
+
+.currency-data {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.currency-data th, .currency-data td {
+  text-align: end;
+  padding: 15px;
+  border-bottom: solid 1px #bbbbbb;
+  
+}
+
+.currency-data .name-column {
+  text-align: start;
+}
+
+.currency-data .group-name {
+  text-align: center;
+}

@@ -116,10 +116,10 @@ const CurrencyPage: React.FC = () => {
                     />
                     Group by first letter
                 </label>
-                <table>
+                <table className="currency-data mt-20">
                     <thead className="table-head">
                         <tr>
-                            <th onClick={() => handleSort("currency")}>
+                            <th onClick={() => handleSort("currency")} className="name-column">
                                 {getSortIcon("currency")} Name
                             </th>
                             <th onClick={() => handleSort("rate")}>{getSortIcon("rate")} Rate</th>
@@ -134,13 +134,13 @@ const CurrencyPage: React.FC = () => {
                         {Object.entries(groupedRates).map(([group, items]) => (
                             <React.Fragment key={group}>
                                 <tr>
-                                    <td colSpan={5}>
+                                    <td colSpan={5} className="group-name">
                                         <strong>{group}</strong>
                                     </td>
                                 </tr>
                                 {items.map(({currency, rate, ask, bid, diff24h}) => (
                                     <tr key={currency}>
-                                        <td>{currency}</td>
+                                        <td className="name-column">{currency}</td>
                                         <td>{rate}</td>
                                         <td>{ask}</td>
                                         <td>{bid}</td>

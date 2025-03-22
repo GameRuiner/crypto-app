@@ -4,12 +4,12 @@ import webpackDevServer from 'webpack-dev-server';
 import HtmlWebpackPlugin from "html-webpack-plugin";
 import ForkTsCheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";
 import ESLintPlugin from "eslint-webpack-plugin";
-import {TsconfigPathsPlugin} from "tsconfig-paths-webpack-plugin";
+import { TsconfigPathsPlugin } from "tsconfig-paths-webpack-plugin";
 import packageJson from "./package.json" with {type: "json"};
 
 const webpackConfig = (env): webpack.Configuration => ({
     entry: "./src/index.tsx",
-    ...(env.production || !env.development ? {} : {devtool: "eval-source-map"}),
+    ...(env.production || !env.development ? {} : { devtool: "eval-source-map" }),
     resolve: {
         extensions: [".ts", ".tsx", ".js"],
         plugins: [new TsconfigPathsPlugin()]
@@ -32,14 +32,18 @@ const webpackConfig = (env): webpack.Configuration => ({
                 test: /\.css$/i,
                 use: ['style-loader', 'css-loader'],
                 exclude: /dist/
-              },
+            },
+            {
+                test: /\.(png|jpe?g|gif|svg)$/i,
+                type: 'asset/resource',
+            }
         ]
     },
-    devServer: {  
+    devServer: {
         historyApiFallback: true,
         hot: true,
         port: 8080,
-      },
+    },
     plugins: [
         new HtmlWebpackPlugin({
             template: "./public/index.html"
@@ -50,7 +54,7 @@ const webpackConfig = (env): webpack.Configuration => ({
             "process.env.VERSION": JSON.stringify(packageJson.version)
         }),
         new ForkTsCheckerWebpackPlugin(),
-        new ESLintPlugin({files: "./src/**/*.{ts,tsx,js,jsx}"})
+        new ESLintPlugin({ files: "./src/**/*.{ts,tsx,js,jsx}" })
     ]
 });
 

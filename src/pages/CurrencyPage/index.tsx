@@ -2,7 +2,7 @@ import Filter from "components/Filter";
 import {Rate, RateArrayItem} from "components/Rate";
 import Toggle from "components/Toggle";
 import React, {useEffect, useState} from "react";
-import {useParams, Link} from "react-router-dom";
+import {useParams} from "react-router-dom";
 
 const SORT_ORDER = ["none", "desc", "asc"];
 
@@ -98,11 +98,8 @@ const CurrencyPage: React.FC = () => {
     };
 
     return (
-        <main className="container">
-            <h1>{currencyParameter?.toUpperCase()} Details</h1>
-            <Link to="/" className="mt-10">
-                Back to Home
-            </Link>
+        <div>
+            <h1 className="center">{currencyParameter?.toUpperCase()} Details</h1>
             {loading && <p>Loading...</p>}
             {error && <p style={{color: "red"}}>{error}</p>}
             <div className="mt-10">
@@ -146,7 +143,7 @@ const CurrencyPage: React.FC = () => {
                     </tbody>
                 </table>
             </div>
-        </main>
+        </div>
     );
 };
 

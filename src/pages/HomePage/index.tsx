@@ -32,9 +32,9 @@ const HomePage: React.FC = () => {
     }, []);
 
     return (
-        <main className="container">
-            <h1 className="mt-10">Cryptocurrency rates </h1>
-            <p className="mt-20">Relative to USD</p>
+        <div>
+            <h1 className="center">Cryptocurrency rates </h1>
+            <p className="center mt-20">Relative to USD</p>
             {loading && <p>Loading...</p>}
             {error && <p style={{color: "red"}}>{error}</p>}
             {!loading && !error && (
@@ -49,7 +49,7 @@ const HomePage: React.FC = () => {
                     ))}
                 </ul>
             )}
-        </main>
+        </div>
     );
 };
 

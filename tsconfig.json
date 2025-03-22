@@ -24,11 +24,15 @@
       ],
       "pages/*": [
         "src/pages/*"
+      ],
+      "images/*": [
+        "src/images/*"
       ]
     }
   },
   "include": [
     "./src",
-    "./webpack.config.ts"
+    "./webpack.config.ts",
+    "global.d.ts"
   ]
 }

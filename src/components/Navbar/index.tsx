@@ -5,7 +5,7 @@ const Navbar = () => {
     return (
         <nav>
             <a href="/">
-                <img src={logo} alt="CryptoApp Logo" width="100" />
+                <img src={logo} alt="CryptoApp Logo" />
             </a>
         </nav>
     );

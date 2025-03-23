@@ -1,6 +1,7 @@
 * {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
 
 .mt-10 {
@@ -33,7 +34,6 @@ ul {
   padding: 20px;
   display: flex;
   flex-direction: column;
-  /* align-items: center; */
 }
 
 .rates-list {
@@ -70,13 +70,13 @@ ul {
   font-size: 1.2em;
 }
 
-.currency-item p {
-  font-size: 1em;
-  color: #bbbbbb;
-}
-
 .table-head th {
   cursor: pointer;
+}
+
+.table-container {
+  width: 100%;
+  overflow: scroll;
 }
 
 .currency-data {
@@ -84,11 +84,12 @@ ul {
   border-collapse: collapse;
 }
 
-.currency-data th, .currency-data td {
+.currency-data th,
+.currency-data td {
   text-align: end;
   padding: 15px;
   border-bottom: solid 1px #bbbbbb;
-  
+
 }
 
 .currency-data .name-column {
@@ -106,4 +107,35 @@ ul {
 
 .center {
   text-align: center;
+}
+
+nav img {
+  width: 100px;
+}
+
+@media screen and (max-width: 767px) {
+  h1 {
+    font-size: 1.5em;
+  }
+  .container {
+    padding: 5;
+  }
+  .rates-list {
+    justify-content: center;
+  }
+  .currency-item {
+    width: 120px;
+    padding: 5px;
+  }
+  .currency-item strong {
+    font-size: 0.8em;
+  }
+  .currency-item p {
+    font-size: 0.6em;
+    color: #bbbbbb;
+  }
+
+  nav img {
+    width: 60px;
+  }
 }

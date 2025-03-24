@@ -1,14 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {z} from "zod";
-
-const RateSchema = z.object({
-    rate: z.number(),
-    ask: z.number(),
-    bid: z.number(),
-    diff24h: z.number()
-});
-const RatesResponseSchema = z.record(z.string(), z.record(z.string(), RateSchema));
-type RateType = z.infer<typeof RateSchema>;
+import {RateType, RatesResponseSchema} from "components/Rate";
 
 const HomePage: React.FC = () => {
     const [rates, setRates] = useState<{[key: string]: RateType}>({});

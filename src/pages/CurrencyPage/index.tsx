@@ -1,5 +1,5 @@
 import Filter from "components/Filter";
-import {Rate, RateArrayItem} from "components/Rate";
+import {RateType, RateArrayItem, RatesResponseSchema} from "components/Rate";
 import Toggle from "components/Toggle";
 import React, {useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
@@ -25,10 +25,11 @@ const CurrencyPage: React.FC = () => {
                 if (!response.ok) {
                     throw new Error("Failed to fetch rates");
                 }
-                const data = await response.json();
+                const rawData = await response.json();
+                const data = RatesResponseSchema.parse(rawData);
                 if (data[currencyParameter]) {
                     const currencyArray = Object.entries(
-                        data[currencyParameter] as Record<string, Rate>
+                        data[currencyParameter] as Record<string, RateType>
                     ).map(([rateCurrency, rateData]) => ({
                         currency: rateCurrency.toUpperCase(),
                         ...rateData
@@ -37,8 +38,8 @@ const CurrencyPage: React.FC = () => {
                 } else {
                     setError("Currency not found");
                 }
-            } catch (e) {
-                setError((e as Error).message);
+            } catch {
+                setError("We're updating our currency rates. Please check back later.");
             } finally {
                 setLoading(false);
             }
@@ -101,52 +102,61 @@ const CurrencyPage: React.FC = () => {
         <div>
             <h1 className="center">{currencyParameter?.toUpperCase()} Details</h1>
             {loading && <p>Loading...</p>}
-            {error && <p style={{color: "red"}}>{error}</p>}
-            <div className="mt-10">
-                <div className="control-container">
-                    <Filter filterHandler={setFilterValue}></Filter>
-                    <Toggle toggleHandler={setGroupBy} value={groupBy}></Toggle>
-                </div>
-                <div className="table-container">
-                    <table className="currency-data mt-20">
-                        <thead className="table-head">
-                            <tr>
-                                <th onClick={() => handleSort("currency")} className="name-column">
-                                    {getSortIcon("currency")} Name
-                                </th>
-                                <th onClick={() => handleSort("rate")}>
-                                    {getSortIcon("rate")} Rate
-                                </th>
-                                <th onClick={() => handleSort("ask")}>{getSortIcon("ask")} Ask</th>
-                                <th onClick={() => handleSort("bid")}>{getSortIcon("bid")} Bid</th>
-                                <th onClick={() => handleSort("diff24h")}>
-                                    {getSortIcon("diff24h")} 24h %
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {Object.entries(groupedRates).map(([group, items]) => (
-                                <React.Fragment key={group}>
-                                    <tr>
-                                        <td colSpan={5} className="group-name">
-                                            <strong>{group}</strong>
-                                        </td>
-                                    </tr>
-                                    {items.map(({currency, rate, ask, bid, diff24h}) => (
-                                        <tr key={currency}>
-                                            <td className="name-column">{currency}</td>
-                                            <td>{rate}</td>
-                                            <td>{ask}</td>
-                                            <td>{bid}</td>
-                                            <td>{diff24h}</td>
+            {error && <p>{error}</p>}
+            {!loading && !error && (
+                <div className="mt-10">
+                    <div className="control-container">
+                        <Filter filterHandler={setFilterValue}></Filter>
+                        <Toggle toggleHandler={setGroupBy} value={groupBy}></Toggle>
+                    </div>
+                    <div className="table-container">
+                        <table className="currency-data mt-20">
+                            <thead className="table-head">
+                                <tr>
+                                    <th
+                                        onClick={() => handleSort("currency")}
+                                        className="name-column"
+                                    >
+                                        {getSortIcon("currency")} Name
+                                    </th>
+                                    <th onClick={() => handleSort("rate")}>
+                                        {getSortIcon("rate")} Rate
+                                    </th>
+                                    <th onClick={() => handleSort("ask")}>
+                                        {getSortIcon("ask")} Ask
+                                    </th>
+                                    <th onClick={() => handleSort("bid")}>
+                                        {getSortIcon("bid")} Bid
+                                    </th>
+                                    <th onClick={() => handleSort("diff24h")}>
+                                        {getSortIcon("diff24h")} 24h %
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {Object.entries(groupedRates).map(([group, items]) => (
+                                    <React.Fragment key={group}>
+                                        <tr>
+                                            <td colSpan={5} className="group-name">
+                                                <strong>{group}</strong>
+                                            </td>
                                         </tr>
-                                    ))}
-                                </React.Fragment>
-                            ))}
-                        </tbody>
-                    </table>
+                                        {items.map(({currency, rate, ask, bid, diff24h}) => (
+                                            <tr key={currency}>
+                                                <td className="name-column">{currency}</td>
+                                                <td>{rate}</td>
+                                                <td>{ask}</td>
+                                                <td>{bid}</td>
+                                                <td>{diff24h}</td>
+                                            </tr>
+                                        ))}
+                                    </React.Fragment>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 };

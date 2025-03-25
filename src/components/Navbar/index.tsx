@@ -1,12 +1,13 @@
 import React from "react";
 import logo from "../../images/logo.png";
+import {Link} from "react-router-dom";
 
 const Navbar = () => {
     return (
         <nav>
-            <a href="/">
+            <Link to="/">
                 <img src={logo} alt="CryptoApp Logo" />
-            </a>
+            </Link>
         </nav>
     );
 };

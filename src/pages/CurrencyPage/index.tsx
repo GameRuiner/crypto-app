@@ -1,8 +1,9 @@
 import Filter from "components/Filter";
-import {RateType, RateArrayItem, RatesResponseSchema} from "components/Rate";
+import {RateType, RateArrayItem} from "components/Rate";
 import Toggle from "components/Toggle";
 import React, {useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
+import {useRatesStore} from "src/context/RatesStoreContext";
 
 const SORT_ORDER = ["none", "desc", "asc"];
 
@@ -11,42 +12,30 @@ const CurrencyPage: React.FC = () => {
     const [rateDataArray, setRateDataArray] = useState<RateArrayItem[]>([]);
     const [processedRates, setProcessedRate] = useState<RateArrayItem[]>([]);
     const [groupedRates, setGroupedRates] = useState<Record<string, RateArrayItem[]>>({});
-    const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
     const [sortBy, setSortBy] = useState<string | null>(null);
     const [sortOrderIndex, setSortOrderIndex] = useState(0);
     const [filterValue, setFilterValue] = useState<string>("");
     const [groupBy, setGroupBy] = useState<boolean>(false);
+    const store = useRatesStore();
 
     useEffect(() => {
         const fetchRates = async () => {
-            try {
-                const response = await fetch("https://app.youhodler.com/api/v3/rates/extended");
-                if (!response.ok) {
-                    throw new Error("Failed to fetch rates");
-                }
-                const rawData = await response.json();
-                const data = RatesResponseSchema.parse(rawData);
-                if (data[currencyParameter]) {
-                    const currencyArray = Object.entries(
-                        data[currencyParameter] as Record<string, RateType>
-                    ).map(([rateCurrency, rateData]) => ({
-                        currency: rateCurrency.toUpperCase(),
-                        ...rateData
-                    }));
-                    setRateDataArray(currencyArray);
-                } else {
-                    setError("Currency not found");
-                }
-            } catch {
-                setError("We're updating our currency rates. Please check back later.");
-            } finally {
-                setLoading(false);
+            if (Object.keys(store.rates).length === 0) await store.fetchRates();
+            if (store.rates[currencyParameter]) {
+                const currencyArray = Object.entries(
+                    store.rates[currencyParameter] as Record<string, RateType>
+                ).map(([rateCurrency, rateData]) => ({
+                    currency: rateCurrency.toUpperCase(),
+                    ...rateData
+                }));
+                setRateDataArray(currencyArray);
+            } else {
+                store.error = "Currency not found";
             }
         };
 
         fetchRates();
-    }, [currencyParameter]);
+    }, [currencyParameter, store]);
 
     useEffect(() => {
         setProcessedRate(
@@ -101,9 +90,8 @@ const CurrencyPage: React.FC = () => {
     return (
         <div>
             <h1 className="center">{currencyParameter?.toUpperCase()} Details</h1>
-            {loading && <p>Loading...</p>}
-            {error && <p>{error}</p>}
-            {!loading && !error && (
+            {store.error && <p>{store.error}</p>}
+            {!store.loading && !store.error && (
                 <div className="mt-10">
                     <div className="control-container">
                         <Filter filterHandler={setFilterValue}></Filter>

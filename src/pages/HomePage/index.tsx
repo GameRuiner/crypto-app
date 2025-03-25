@@ -1,50 +1,40 @@
 import React, {useEffect, useState} from "react";
-import {RateType, RatesResponseSchema} from "components/Rate";
+import {RateType} from "components/Rate";
+import {useRatesStore} from "src/context/RatesStoreContext";
+import {Link} from "react-router-dom";
 
 const HomePage: React.FC = () => {
     const [rates, setRates] = useState<{[key: string]: RateType}>({});
-    const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
+    const store = useRatesStore();
 
     useEffect(() => {
         const fetchRates = async () => {
-            try {
-                const response = await fetch("https://app.youhodler.com/api/v3/rates/extended");
-                if (!response.ok) {
-                    throw new Error("Failed to fetch rates");
+            if (Object.keys(store.rates).length === 0) await store.fetchRates();
+            const extractedRates: {[key: string]: RateType} = {};
+            for (const currency in store.rates) {
+                if (store.rates[currency].usd) {
+                    extractedRates[currency] = store.rates[currency].usd;
                 }
-                const rawData = await response.json();
-                const data = RatesResponseSchema.parse(rawData);
-                const extractedRates: {[key: string]: RateType} = {};
-                for (const currency in data) {
-                    if (data[currency].usd) {
-                        extractedRates[currency] = data[currency].usd;
-                    }
-                }
-                setRates(extractedRates);
-            } catch {
-                setError("We're updating our currency rates. Please check back later.");
-            } finally {
-                setLoading(false);
             }
+            setRates(extractedRates);
         };
 
         fetchRates();
-    }, []);
+    }, [store]);
 
     return (
         <div>
             <h1 className="center">Cryptocurrency rates </h1>
             <p className="center mt-20">Relative to USD</p>
-            {error && <p>{error}</p>}
-            {!loading && !error && (
+            {store.error && <p>{store.error}</p>}
+            {!store.loading && !store.error && (
                 <ul className="rates-list">
                     {Object.entries(rates).map(([currency, rateData]) => (
                         <li key={currency}>
-                            <a href={`/${currency}`} className="currency-item">
+                            <Link to={`/${currency}`} className="currency-item">
                                 <strong>{currency.toUpperCase()}</strong>
                                 <p>{rateData.rate}</p>
-                            </a>
+                            </Link>
                         </li>
                     ))}
                 </ul>
